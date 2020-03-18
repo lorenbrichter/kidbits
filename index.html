@@ -1,0 +1,170 @@
+<style>
+    :root {
+        --theme: #e22;
+    }
+    * {
+        margin: 0;
+        padding: 0;
+        font: 30pt Georgia;
+        user-select: none;
+        -webkit-user-select: none;
+        cursor: default;        
+/*        border: 1px solid red;*/
+    }
+    body {
+        padding: 20pt;
+        background: #f8f8f8;
+    }
+    #instruction {
+        margin-top: 50pt;
+        margin-bottom: 50pt;
+        text-align: center;
+        color: var(--theme);
+    }
+    #colorpicker {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+    }
+    #colorpicker span {
+        padding: 10px;
+        line-height: 30pt;
+        font-size: 15pt;
+    }
+    #colorpicker span:hover {
+        text-decoration: underline;
+    }
+    #find {
+        font-weight: bold;
+    }
+    #letters {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    #clock {
+        margin-top: 50pt;
+        margin-bottom: 50pt;
+        text-align: center;
+        color: #ddd;
+    }
+    .box {
+        text-align: center;
+        width: 60pt;
+        height: 60pt;
+        transition: background .1s, color .1s, transform .1s ease-out;
+    }
+    .box:hover {
+        background: white;
+        box-shadow: 0px 3px 20px rgba(0,0,0,.2);
+    }
+    .box:active {
+        box-shadow: 0px 2px 15px rgba(0,0,0,.2);
+        transform: scale(.9);
+    }
+
+/*    @keyframes nope {
+        0%
+    }
+    .lookfor {
+        animation: ;
+    }
+*/
+    
+    .lookfor:active {
+        color: white;
+        background: var(--theme);
+    }
+    .letter {
+        line-height: 60pt;
+    }
+</style>
+<script>
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+    
+    window.addEventListener('mousewheel', function(e) {
+        e.preventDefault();
+    }, false);
+    window.addEventListener('load', function() {
+        
+        // styles
+        let style = document.styleSheets[0];
+        for (let i = 0; i < 15; ++i) {
+            style.insertRule('.rot'+i+':hover { transform: rotate('+10*((Math.random()-.5))+'deg); }', 0);
+        }
+        
+        // colorpicker
+        let colorpicker = document.getElementById('colorpicker');
+        function maketheme(name, color) {
+            let e = document.createElement('span');
+            e.innerText = name;
+            e.style = 'color:'+color;
+            e.onclick = function() {
+                document.documentElement.style.setProperty('--theme', color);
+            };
+            colorpicker.appendChild(e);
+        }
+        maketheme('red', '#e22');
+        maketheme('green', '#0d0');
+        maketheme('blue', '#33f');
+        maketheme('magenta', '#e2e');
+        
+        // letters
+        
+        let b = document.getElementById('letters');
+        let letterelements = [];
+        for (let i = 0; i < 26; i++) {
+            let c = document.createElement('div'); c.classList.add('box');
+            c.classList.add('rot' + (i % 15));
+            letterelements[i] = c;
+            c.onclick = function() {
+                if (i == lookfor) {
+                    // yay
+                    nextletter();
+                } else {
+                    // nextletter();
+                    // try again
+                }
+            };
+            let e = document.createElement('span'); e.classList.add('letter');
+            e.innerText = String.fromCharCode(i+65); // 65 97
+            c.appendChild(e);
+            b.appendChild(c);
+        }
+        
+        // clock
+        let start = new Date();
+        (function tick() {
+            let c = document.getElementById('clock');
+            c.innerText = ":"+Math.round((new Date() - start) / 1000);
+            setTimeout(tick, 1000);
+        })();
+        
+        let letterseq = [];
+        for (let i = 0; i < 26; ++i) { letterseq[i] = i; }
+        shuffleArray(letterseq);
+        
+        let lookfor = 0;
+        let next = 0;
+        function nextletter() {
+            letterelements[lookfor].classList.remove('lookfor');
+            if (next == 25) {
+                shuffleArray(letterseq);
+                next = 0;
+            }
+            lookfor = letterseq[next++];
+            document.getElementById('find').innerText = String.fromCharCode(lookfor+65);
+            letterelements[lookfor].classList.add('lookfor');
+        }
+        
+        nextletter();
+    });
+</script>
+<p id=instruction>Find the letter <span id=find></span>.</p>
+<div id=letters></div>
+<p id=clock></p>
+<div id=colorpicker></div>
