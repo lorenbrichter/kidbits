@@ -15,21 +15,28 @@
         padding: 20pt;
         background: #f8f8f8;
     }
+    #gamecontainer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+    #game {
+    }
     #instruction {
-        margin-top: 50pt;
         margin-bottom: 50pt;
         text-align: center;
         color: var(--theme);
     }
     #colorpicker {
         position: fixed;
-        bottom: 0;
-        right: 0;
+        bottom: 10px;
+        right: 5px;
     }
     #colorpicker span {
         padding: 10px;
         line-height: 30pt;
-        font-size: 15pt;
+        font: 15pt monospace;
     }
     #colorpicker span:hover {
         text-decoration: underline;
@@ -47,11 +54,12 @@
     }
     #clock {
         margin-top: 50pt;
-        margin-bottom: 50pt;
         text-align: center;
         color: #ddd;
+        font: 15pt monospace;
     }
     .box {
+        outline: .3px solid rgba(0,0,0,.1);
         text-align: center;
         width: 60pt;
         height: 60pt;
@@ -62,6 +70,7 @@
         box-shadow: 0px 3px 20px rgba(0,0,0,.2);
     }
     .box:active {
+        z-index:1;
         box-shadow: 0px 2px 15px rgba(0,0,0,.2);
         transform: scale(.9);
     }
@@ -144,7 +153,10 @@
         let start = new Date();
         (function tick() {
             let c = document.getElementById('clock');
-            c.innerText = ":"+Math.round((new Date() - start) / 1000);
+            let t = Math.round((new Date() - start) / 1000);
+            let seconds = t % 60;
+            let minutes = 0;
+            c.innerText = ("0"+minutes).slice(-2) + ":" + ("0"+seconds).slice(-2);
             setTimeout(tick, 1000);
         })();
         
@@ -168,7 +180,11 @@
         nextletter();
     });
 </script>
+<div id=gamecontainer>
+<div id=game>
 <p id=instruction>Find the letter <span id=find></span>.</p>
 <div id=letters></div>
 <p id=clock></p>
 <div id=colorpicker></div>
+</div>
+</div>
